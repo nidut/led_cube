@@ -1,4 +1,4 @@
-void setLED(byte x, byte y, byte z, bool led_state=true) {
+void setVoxel(byte x, byte y, byte z, bool led_state=true) {
     if (led_state) {
         bitSet(cube[y][z], x);
     }
@@ -24,7 +24,7 @@ void setPlaneYZ(byte x, bool led_state=true) {
     // plane between Y and Z axis, along X axis
     for (byte z = 0; z < SIZE_Z; z++) {
         for (byte y = 0; y < SIZE_Y; y++) {
-            setLED(x, y, z, led_state);
+            setVoxel(x, y, z, led_state);
         }
     }
 }

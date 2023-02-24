@@ -6,9 +6,9 @@ const byte SIZE_Y = 2;
 const byte SIZE_Z = 8;
 
 // pin numbers
-const byte PIN_SHIFT = 19;   // connected to SHCP gelb
-const byte PIN_STORE = 18;   // connected to STCP grün
-const byte PIN_DATA  = 26;   // blau
+const byte PIN_SHIFT = 19;
+const byte PIN_STORE = 18;
+const byte PIN_DATA  = 26;
 const byte LAYER_PINS[SIZE_Z] = {   
     27,
     25,
@@ -157,6 +157,7 @@ void setup() {
     setupPins();
     setupTimerRefreshCube();
     setupTimerBrightness();
+    attachInterrupt(PIN_BUTTON, ISR_changeState, FALLING);
     //Serial.begin(115200);
     counter_z = 1;
     prev_z = 0;
@@ -168,7 +169,6 @@ void setup() {
     blinkingGrid_toggle = true;
     animation_speed_factor = 1;
     digitalWrite(LED_INTERNAL, HIGH);
-    attachInterrupt(PIN_BUTTON, ISR_changeState, FALLING);
 }
 
 void loop() {
