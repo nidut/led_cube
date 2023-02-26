@@ -2,7 +2,7 @@ const byte LED_INTERNAL = 2;
 
 // cube dimensions
 const byte SIZE_X = 8;
-const byte SIZE_Y = 2;
+const byte SIZE_Y = 4;
 const byte SIZE_Z = 8;
 
 // pin numbers
