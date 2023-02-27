@@ -1,15 +1,15 @@
+#include "Arduino.h"
+
+#include "ledcube.hpp"
+#include "animations/blinking_grid.hpp"
+#include "animations/random_dot.hpp"
+
 const byte LED_INTERNAL = 2;
-
-// cube dimensions
-const byte SIZE_X = 8;
-const byte SIZE_Y = 4;
-const byte SIZE_Z = 8;
-
 // pin numbers
 const byte PIN_SHIFT = 19;
 const byte PIN_STORE = 18;
 const byte PIN_DATA  = 26;
-const byte LAYER_PINS[SIZE_Z] = {   
+const byte LAYER_PINS[8] = {   
     27,
     25,
     32,
@@ -38,52 +38,37 @@ volatile int brightness_percent; // non-linear due to LED
 // 50% -> 255
 // 0% -> 511
 
-
 // TODO
 // 4x shift register platine löten
 // gesamten cube inbetriebnehmen (SIZE_Y = 8)
 // animations geschwindigkeit über poti? (zB poti bei gedrückter Taste)
 // kaputte LED austauschen
-
-void setCube(bool led_state=true);
+// vcc stabilisieren? (flash Probleme mit desktop PC)
 
 // global variables
 hw_timer_t *Timer0_Cfg = NULL;
 hw_timer_t *Timer2_Cfg = NULL;
-byte cube[SIZE_Y][SIZE_Z];
-// [Y][Z]
-// one byte is one row in x direction
-// true = LED on, false = LED off
-//
-//       o o o o o o o o
-//     o o o o o o o o o
-//   o o o o o o o o o o
-// 0 0 0 0 0 0 0 0 o o o
-// 0 0 0 0 0 0 0 0 o o o
-// 0 0 0 0 0 0 0 0 o o o
-// Z 0 0 0 0 0 0 0 o o o 
-// ^ 0 0 Y 0 0 0 0 o o o
-// | 0 / 0 0 0 0 0 o o
-// | / 0 0 0 0 0 0 o
-// 0 ----->X 0 0 0
-//
+LedCube cube;
+
 byte counter_z;
 byte prev_z;
 volatile byte active_animation;
 int last_change_state;
-int randomDot_last_run;
-int blinkingGrid_last_run;
-bool blinkingGrid_toggle;
 float animation_speed_factor;
-const int RANDOMDOT_FREQ = 5; // [Hz]
-const int BLINKINGGRID_FREQ = 5; // [Hz]
+
 
 void IRAM_ATTR ISR_refreshCube(){
     // deactivate shift register output    
     digitalWrite(PIN_STORE, LOW);
     // fill shift register with new data
-    for (byte y = 0; y < SIZE_Y; y++) {
-        shiftOut(PIN_DATA, PIN_SHIFT, LSBFIRST, ~cube[y][counter_z]);
+    for (byte y = 0; y < cube.getSizeY(); y++) {
+        uint8_t output_byte = 0;
+        // here SIZE_X is hardcoded to 8 because of shiftOut expects 1 byte, 
+        // more logic would be needed for variable SIZE_X
+        for (byte x = 0; x < 8; x++) {
+            output_byte += cube.getVoxel(x, y, counter_z) << x;
+        }
+        shiftOut(PIN_DATA, PIN_SHIFT, LSBFIRST, ~output_byte);
     }
     //switch off previous layer  
     ledcWrite(prev_z, PWM_OFF);
@@ -95,7 +80,7 @@ void IRAM_ATTR ISR_refreshCube(){
     // increment counter
     prev_z = counter_z;    
     counter_z++;
-    if (counter_z >= SIZE_Z){
+    if (counter_z >= cube.getSizeZ()){
         counter_z = 0;
     }
 }
@@ -127,7 +112,7 @@ void setupPins() {
     pinMode(PIN_STORE, OUTPUT);
     pinMode(PIN_SHIFT, OUTPUT);
     pinMode(PIN_DATA, OUTPUT);
-    for (int z = 0; z < SIZE_Z; z++) {
+    for (int z = 0; z < 8; z++) {
         ledcAttachPin(LAYER_PINS[z], z);
         ledcSetup(z, PWM_FREQ, PWM_RES);
     }
@@ -140,7 +125,7 @@ void setupTimerRefreshCube(){
     // base clock: 80 MHz
     // prescaler: 80
     // timer tick: 1µs
-    timerAlarmWrite(Timer0_Cfg, 1000000/(SIZE_Z*REFRESH_RATE), true);
+    timerAlarmWrite(Timer0_Cfg, 1000000/(8*REFRESH_RATE), true);
     timerAlarmEnable(Timer0_Cfg);
 }
 void setupTimerBrightness() {
@@ -164,9 +149,9 @@ void setup() {
     active_animation = 0;
     brightness_percent = 25;
     last_change_state = 0;
-    randomDot_last_run = 0;
-    blinkingGrid_last_run = 0;
-    blinkingGrid_toggle = true;
+    // randomDot_last_run = 0;
+    // blinkingGrid_last_run = 0;
+    // blinkingGrid_toggle = true;
     animation_speed_factor = 1;
     digitalWrite(LED_INTERNAL, HIGH);
 }
@@ -174,13 +159,13 @@ void setup() {
 void loop() {
     switch (active_animation) {
         case 0:
-            randomDot();
+            randomDot(cube);
             break;
         case 1:
-            blinkingGrid();
+            blinkingGrid(cube);
             break;
         case 2:
-            setCube();
+            cube.setCube();
             break;
     }
 }
