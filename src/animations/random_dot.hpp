@@ -4,9 +4,11 @@
 #include "Arduino.h"
 #include "ledcube.hpp"
 
-static int randomDot_last_run = 0;
-static const int RANDOMDOT_FREQ = 5; // [Hz]
+namespace RandomDot
+{
 
-void randomDot(LedCube& cube);
+void draw(LedCube& cube, uint8_t freq = 5);
+
+}
 
 #endif

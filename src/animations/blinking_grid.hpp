@@ -4,10 +4,11 @@
 #include "Arduino.h"
 #include "ledcube.hpp"
 
-static int blinkingGrid_last_run = 0;
-static bool blinkingGrid_toggle = true;
-static const int BLINKINGGRID_FREQ = 5; // [Hz]
+namespace BlinkingGrid
+{
 
-void blinkingGrid(LedCube& cube);
+void draw(LedCube& cube, uint8_t freq = 5);
+
+}
 
 #endif

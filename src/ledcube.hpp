@@ -26,10 +26,12 @@ class LedCube
         void setVoxel(uint8_t x, uint8_t y, uint8_t z, bool led_state = true);
         bool getVoxel(uint8_t x, uint8_t y, uint8_t z);
         void setRow(uint8_t y, uint8_t z, bool led_state=true);
+        void setPlane(uint8_t axis, uint8_t position, bool led_state=true);
         void setPlaneXY(uint8_t z, bool led_state=true);
         void setPlaneYZ(uint8_t x, bool led_state=true);
         void setPlaneXZ(uint8_t y, bool led_state=true);
         void setCube(bool led_state=true);
+        uint8_t getSize(uint8_t axis);
         uint8_t getSizeX();
         uint8_t getSizeY();
         uint8_t getSizeZ();
