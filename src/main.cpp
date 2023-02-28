@@ -6,6 +6,7 @@
 #include "animations/planboing.hpp"
 #include "animations/rain.hpp"
 #include "animations/bouncing_ball.hpp"
+#include "animations/random_fill.hpp"
 
 /* Pins */
 const uint8_t LED_INTERNAL = 2;
@@ -29,7 +30,7 @@ const uint8_t PIN_BUTTON = 16;
 /* Constants */
 const int BUTTON_DEBOUNCE = 500; // [ms]
 const int POTI_UPDATE_RATE = 10; // [ms]
-const uint8_t NUM_OF_ANIMATIONS = 3;
+const uint8_t NUM_OF_ANIMATIONS = 5;
 const int REFRESH_RATE = 100; // [Hz] refresh rate for complete cube (all layers)
 const int PWM_FREQ = 125000;
 const int PWM_RES = 8;
@@ -146,7 +147,7 @@ void setup() {
     //Serial.begin(115200);
     act_z = 1;
     prev_z = 0;
-    active_animation = 0;
+    active_animation = 3;
     brightness_percent = 25;
     last_change_state = 0;
     animation_speed_factor = 1;
@@ -165,6 +166,12 @@ void loop() {
         case 2:
             Planboing::draw(cube, 2, 10);
             //cube.setCube();
+            break;
+        case 3:
+            RandomFill::draw(cube, 10);
+            break;
+        case 4:
+            RandomFill::draw(cube, 10, false);
             break;
     }
 }
