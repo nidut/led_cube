@@ -2,6 +2,8 @@
 
 using namespace RandomDot;
 
+static int last_run = 0; 
+
 void RandomDot::draw(LedCube& cube, uint8_t freq)
 {
   if (millis() - last_run > 1000/freq) {

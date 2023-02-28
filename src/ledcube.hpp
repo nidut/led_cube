@@ -31,6 +31,7 @@ class LedCube
         void setPlaneYZ(uint8_t x, bool led_state=true);
         void setPlaneXZ(uint8_t y, bool led_state=true);
         void setCube(bool led_state=true);
+        void shift(uint8_t axis, int8_t distance);
         uint8_t getSize(uint8_t axis);
         uint8_t getSizeX();
         uint8_t getSizeY();

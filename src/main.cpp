@@ -4,6 +4,7 @@
 #include "animations/blinking_grid.hpp"
 #include "animations/random_dot.hpp"
 #include "animations/planboing.hpp"
+#include "animations/rain.hpp"
 
 const byte LED_INTERNAL = 2;
 // pin numbers
@@ -55,7 +56,6 @@ byte counter_z;
 byte prev_z;
 volatile byte active_animation;
 int last_change_state;
-static int last_run; 
 float animation_speed_factor;
 
 
@@ -148,8 +148,7 @@ void setup() {
     //Serial.begin(115200);
     counter_z = 1;
     prev_z = 0;
-    active_animation = 0;
-    last_run = 0;
+    active_animation = 1;
     brightness_percent = 25;
     last_change_state = 0;
     // randomDot_last_run = 0;
@@ -168,7 +167,7 @@ void loop() {
             Planboing::draw(cube, 0, 10);
             break;
         case 1:
-            Planboing::draw(cube, 1, 10);
+            Rain::draw(cube);
             //blinkingGrid(cube);
             break;
         case 2:

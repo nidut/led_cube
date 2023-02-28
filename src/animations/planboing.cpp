@@ -2,7 +2,7 @@
 
 using namespace Planboing;
 
-
+static int last_run = 0; 
 static int i = 0;
 static int increment = 1;
 
