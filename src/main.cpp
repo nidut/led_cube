@@ -7,6 +7,7 @@
 #include "animations/rain.hpp"
 #include "animations/bouncing_ball.hpp"
 #include "animations/random_fill.hpp"
+#include "animations/ripples.hpp"
 
 /* Pins */
 const uint8_t LED_INTERNAL = 2;
@@ -168,10 +169,10 @@ void loop() {
             //cube.setCube();
             break;
         case 3:
-            RandomFill::draw(cube, 10);
+            RandomFill::draw(cube, 20);
             break;
         case 4:
-            RandomFill::draw(cube, 10, false);
+            Ripples::draw(cube, 300);
             break;
     }
 }
