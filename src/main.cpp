@@ -5,13 +5,14 @@
 #include "animations/random_dot.hpp"
 #include "animations/planboing.hpp"
 #include "animations/rain.hpp"
+#include "animations/bouncing_ball.hpp"
 
-const byte LED_INTERNAL = 2;
-// pin numbers
-const byte PIN_SHIFT = 19;
-const byte PIN_STORE = 18;
-const byte PIN_DATA  = 26;
-const byte LAYER_PINS[8] = {   
+/* Pins */
+const uint8_t LED_INTERNAL = 2;
+const uint8_t PIN_SHIFT = 19;
+const uint8_t PIN_STORE = 18;
+const uint8_t PIN_DATA  = 26;
+const uint8_t LAYER_PINS[8] = {   
     27,
     25,
     32,
@@ -22,53 +23,49 @@ const byte LAYER_PINS[8] = {
     1   // Pin 1 TXD -> not useable with Serial Connection active
     
 };
-const byte PIN_POTI = 36;
-const byte PIN_BUTTON = 16;
+const uint8_t PIN_POTI = 36;
+const uint8_t PIN_BUTTON = 16;
 
-const byte NUM_OF_ANIMATIONS = 3;
+/* Constants */
 const int BUTTON_DEBOUNCE = 500; // [ms]
-
-// refresh rate for complete cube (all layers)
-const word REFRESH_RATE = 100; // [Hz]
-const word POTI_UPDATE_RATE = 10; // [ms]
+const int POTI_UPDATE_RATE = 10; // [ms]
+const uint8_t NUM_OF_ANIMATIONS = 3;
+const int REFRESH_RATE = 100; // [Hz] refresh rate for complete cube (all layers)
 const int PWM_FREQ = 125000;
 const int PWM_RES = 8;
 const int PWM_OFF = pow(2,PWM_RES)-1;
 
-volatile int brightness_percent; // non-linear due to LED
-// 100% -> 0
-// 50% -> 255
-// 0% -> 511
-
-// TODO
+/* TODO */
 // 4x shift register platine löten
 // gesamten cube inbetriebnehmen (SIZE_Y = 8)
 // animations geschwindigkeit über poti? (zB poti bei gedrückter Taste)
 // kaputte LED austauschen
 // vcc stabilisieren? (flash Probleme mit desktop PC)
 
-// global variables
-hw_timer_t *Timer0_Cfg = NULL;
-hw_timer_t *Timer2_Cfg = NULL;
+/* Globals */
+volatile uint8_t brightness_percent; // non-linear due to LED
+// 100% -> 0
+// 50% -> 255
+// 0% -> 511
+hw_timer_t *timer_refresh = NULL;
+hw_timer_t *timer_poti = NULL;
 LedCube cube;
-
-byte counter_z;
-byte prev_z;
-volatile byte active_animation;
-int last_change_state;
+uint8_t act_z;
+uint8_t prev_z;
+volatile uint8_t active_animation;
+uint8_t last_change_state;
 float animation_speed_factor;
-
 
 void IRAM_ATTR ISR_refreshCube(){
     // deactivate shift register output    
     digitalWrite(PIN_STORE, LOW);
     // fill shift register with new data
-    for (byte y = 0; y < cube.getSizeY(); y++) {
+    for (uint8_t y = 0; y < cube.getSizeY(); y++) {
         uint8_t output_byte = 0;
-        // here SIZE_X is hardcoded to 8 because of shiftOut expects 1 byte, 
+        // here SIZE_X is hardcoded to 8 because of shiftOut expects 1 Byte, 
         // more logic would be needed for variable SIZE_X
-        for (byte x = 0; x < 8; x++) {
-            output_byte += cube.getVoxel(x, y, counter_z) << x;
+        for (uint8_t x = 0; x < 8; x++) {
+            output_byte += cube.getVoxel(x, y, act_z) << x;
         }
         shiftOut(PIN_DATA, PIN_SHIFT, LSBFIRST, ~output_byte);
     }
@@ -76,24 +73,14 @@ void IRAM_ATTR ISR_refreshCube(){
     ledcWrite(prev_z, PWM_OFF);
     // switch on new layer
     int pwm_on = PWM_OFF - (PWM_OFF*brightness_percent/100);
-    ledcWrite(counter_z, pwm_on);
+    ledcWrite(act_z, pwm_on);
     // activate shift register output
     digitalWrite(PIN_STORE, HIGH);
     // increment counter
-    prev_z = counter_z;    
-    counter_z++;
-    if (counter_z >= cube.getSizeZ()){
-        counter_z = 0;
-    }
-}
-
-void IRAM_ATTR ISR_changeState() {
-    if (millis() - last_change_state > BUTTON_DEBOUNCE) {
-      active_animation++;
-      if (active_animation >= NUM_OF_ANIMATIONS) {
-          active_animation = 0;    
-      }
-      last_change_state = millis();
+    prev_z = act_z;    
+    act_z++;
+    if (act_z >= cube.getSizeZ()){
+        act_z = 0;
     }
 }
 
@@ -106,6 +93,16 @@ void IRAM_ATTR ISR_getPotiValue() {
     else {
         // button pressed
         brightness_percent = map(analog_value, 0, 4095, 0, 100);
+    }
+}
+
+void IRAM_ATTR ISR_changeState() {
+    if (millis() - last_change_state > BUTTON_DEBOUNCE) {
+      active_animation++;
+      if (active_animation >= NUM_OF_ANIMATIONS) {
+          active_animation = 0;    
+      }
+      last_change_state = millis();
     }
 }
 
@@ -122,38 +119,36 @@ void setupPins() {
 }
 
 void setupTimerRefreshCube(){
-    Timer0_Cfg = timerBegin(0, 80, true);
-    timerAttachInterrupt(Timer0_Cfg, &ISR_refreshCube, true);
+    timer_refresh = timerBegin(0, 80, true);
+    timerAttachInterrupt(timer_refresh, &ISR_refreshCube, true);
     // base clock: 80 MHz
     // prescaler: 80
     // timer tick: 1µs
-    timerAlarmWrite(Timer0_Cfg, 1000000/(8*REFRESH_RATE), true);
-    timerAlarmEnable(Timer0_Cfg);
+    timerAlarmWrite(timer_refresh, 1000000/(8*REFRESH_RATE), true);
+    timerAlarmEnable(timer_refresh);
 }
-void setupTimerBrightness() {
-    Timer2_Cfg = timerBegin(2, 80, true);
-    timerAttachInterrupt(Timer2_Cfg, &ISR_getPotiValue, true);
+
+void setupTimerPoti() {
+    timer_poti = timerBegin(2, 80, true);
+    timerAttachInterrupt(timer_poti, &ISR_getPotiValue, true);
     // base clock: 80 MHz
     // prescaler: 80
     // timer tick: 1µs
-    timerAlarmWrite(Timer2_Cfg, POTI_UPDATE_RATE*1000, true);
-    timerAlarmEnable(Timer2_Cfg);
+    timerAlarmWrite(timer_poti, POTI_UPDATE_RATE*1000, true);
+    timerAlarmEnable(timer_poti);
 }
 
 void setup() {
     setupPins();
     setupTimerRefreshCube();
-    setupTimerBrightness();
+    setupTimerPoti();
     attachInterrupt(PIN_BUTTON, ISR_changeState, FALLING);
     //Serial.begin(115200);
-    counter_z = 1;
+    act_z = 1;
     prev_z = 0;
-    active_animation = 1;
+    active_animation = 0;
     brightness_percent = 25;
     last_change_state = 0;
-    // randomDot_last_run = 0;
-    // blinkingGrid_last_run = 0;
-    // blinkingGrid_toggle = true;
     animation_speed_factor = 1;
     digitalWrite(LED_INTERNAL, HIGH);
 }
@@ -161,10 +156,7 @@ void setup() {
 void loop() {
     switch (active_animation) {
         case 0:
-            // cube.setCube(false);
-            // cube.setPlaneXZ(3);
-            // delay(100);
-            Planboing::draw(cube, 0, 10);
+            BouncingBall::draw(cube, 5);
             break;
         case 1:
             Rain::draw(cube);

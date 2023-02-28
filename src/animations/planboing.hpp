@@ -4,7 +4,6 @@
 #include "ledcube.hpp"
 #include "Arduino.h"
 
-
 namespace Planboing
 {
 
