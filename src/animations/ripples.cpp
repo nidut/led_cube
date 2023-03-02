@@ -23,8 +23,8 @@ void Ripples::draw(LedCube& cube, int freq)
         {
             for (uint8_t y = 0; y < cube.getSizeY(); y++)
             {
-                distance = distance2d(cube.getSizeX()/2,cube.getSizeY()/2, x, y)/9.899495*8;
-                height = cube.getSizeZ()/2 + sin(distance/ripple_interval + (float) iterations/50) * cube.getSizeZ()/2;
+                distance = distance2d((cube.getSizeX()-1)/2,(cube.getSizeY()-1)/2, x, y);///9.899495*8;
+                height = cube.getSizeZ()/2 + sin(distance/ripple_interval + (float) iterations/100) * cube.getSizeZ()/2;
                 cube.setVoxel(x, y, (int) height);
             }
         }

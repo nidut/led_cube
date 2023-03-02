@@ -38,11 +38,10 @@ const int PWM_RES = 8;
 const int PWM_OFF = pow(2,PWM_RES)-1;
 
 /* TODO */
-// 4x shift register platine löten
-// gesamten cube inbetriebnehmen (SIZE_Y = 8)
 // animations geschwindigkeit über poti? (zB poti bei gedrückter Taste)
 // kaputte LED austauschen
 // vcc stabilisieren? (flash Probleme mit desktop PC)
+
 
 /* Globals */
 volatile uint8_t brightness_percent; // non-linear due to LED
@@ -148,7 +147,7 @@ void setup() {
     //Serial.begin(115200);
     act_z = 1;
     prev_z = 0;
-    active_animation = 3;
+    active_animation = 0;
     brightness_percent = 25;
     last_change_state = 0;
     animation_speed_factor = 1;
@@ -172,7 +171,7 @@ void loop() {
             RandomFill::draw(cube, 20);
             break;
         case 4:
-            Ripples::draw(cube, 300);
+            Ripples::draw(cube, 500);
             break;
     }
 }

@@ -38,7 +38,7 @@ class LedCube
         uint8_t getSizeZ();
     private:
         const static uint8_t SIZE_X = 8;
-        const static uint8_t SIZE_Y = 4;
+        const static uint8_t SIZE_Y = 8;
         const static uint8_t SIZE_Z = 8;
         std::array<std::array<std::array<bool, SIZE_X>, SIZE_Y>, SIZE_Z> cube;
 };
