@@ -9,6 +9,7 @@
 #include "animations/random_fill.hpp"
 #include "animations/ripples.hpp"
 #include "animations/fill.hpp"
+#include "animations/plane_random_suspend.hpp"
 
 /* Pins */
 const uint8_t LED_INTERNAL = 2;
@@ -158,7 +159,7 @@ void setup() {
 void loop() {
     switch (active_animation) {
         case 0:
-            Fill::draw(cube, 10);
+            PlaneRandSuspend::draw(cube, 10);
             break;
         case 1:
             Rain::draw(cube, 10);
@@ -173,6 +174,9 @@ void loop() {
             break;
         case 4:
             Ripples::draw(cube, 500);
+            break;
+        default:
+            BlinkingGrid::draw(cube);
             break;
     }
 }

@@ -11,6 +11,7 @@ void Fill::draw(LedCube& cube, int freq)
     if (millis() - last_run > 10000/freq)
     {  
         cube.setCube(false);
+        last_run = millis();
     }
     if (millis() - last_run > 1000/freq)
     {
