@@ -10,7 +10,7 @@ using namespace std;
 namespace StringFly
 {
 
-void draw(LedCube& cube, string text, uint8_t freq = 5);
+    void draw(LedCube &cube, string text, uint8_t freq = 5);
 
 }
 

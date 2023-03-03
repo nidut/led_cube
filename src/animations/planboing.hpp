@@ -7,7 +7,7 @@
 namespace Planboing
 {
 
-void draw(LedCube& cube, int plane, int freq = 10);
+    void draw(LedCube &cube, int plane, int freq = 10);
 
 }
 #endif

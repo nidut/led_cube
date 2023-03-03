@@ -6,7 +6,7 @@
 namespace Rain
 {
 
-void draw(LedCube& cube, int freq = 10);
+    void draw(LedCube &cube, int freq = 10);
 
 }
 #endif

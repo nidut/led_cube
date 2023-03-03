@@ -4,14 +4,14 @@ using namespace RandomFill;
 
 static uint32_t last_run = 0;
 
-void RandomFill::draw(LedCube& cube, int freq, bool state)
+void RandomFill::draw(LedCube &cube, int freq, bool state)
 {
     // clear cube if first run
-    if (millis() - last_run > 10000/freq)
-    {  
+    if (millis() - last_run > 10000 / freq)
+    {
         cube.setCube(!state);
     }
-    if (millis() - last_run > 1000/freq)
+    if (millis() - last_run > 1000 / freq)
     {
         uint8_t x = random(cube.getSizeX());
         uint8_t y = random(cube.getSizeY());

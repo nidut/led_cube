@@ -2,14 +2,14 @@
 
 using namespace Planboing;
 
-static uint32_t  last_run = 0; 
+static uint32_t last_run = 0;
 static int i = 0;
 static int increment = 1;
 
 // Draw a plane on one axis and send it back and forth.
-void Planboing::draw(LedCube& cube, int axis, int freq)
+void Planboing::draw(LedCube &cube, int axis, int freq)
 {
-	if (millis() - last_run > 1000/freq)
+	if (millis() - last_run > 1000 / freq)
 	{
 		cube.setCube(false);
 		int i_max = 0;
@@ -19,7 +19,8 @@ void Planboing::draw(LedCube& cube, int axis, int freq)
 		{
 			increment = -1;
 		}
-		if (i == 0) {
+		if (i == 0)
+		{
 			increment = 1;
 		}
 		i += increment;
@@ -27,5 +28,3 @@ void Planboing::draw(LedCube& cube, int axis, int freq)
 		last_run = millis();
 	}
 }
-
-

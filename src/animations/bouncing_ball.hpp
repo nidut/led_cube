@@ -6,7 +6,7 @@
 namespace BouncingBall
 {
 
-void draw(LedCube& cube, uint8_t freq = 10);
+    void draw(LedCube &cube, uint8_t freq = 10);
 
 }
 #endif

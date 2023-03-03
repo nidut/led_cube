@@ -2,18 +2,18 @@
 
 using namespace Fill;
 
-static uint32_t  last_run = 0;
-static uint32_t  iterations = 0;
+static uint32_t last_run = 0;
+static uint32_t iterations = 0;
 
-void Fill::draw(LedCube& cube, int freq)
+void Fill::draw(LedCube &cube, int freq)
 {
     // clear cube if first run
-    if (millis() - last_run > 10000/freq)
-    {  
+    if (millis() - last_run > 10000 / freq)
+    {
         cube.setCube(false);
         last_run = millis();
     }
-    if (millis() - last_run > 1000/freq)
+    if (millis() - last_run > 1000 / freq)
     {
         if (iterations == 512)
         {

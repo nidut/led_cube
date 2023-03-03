@@ -7,7 +7,7 @@
 namespace RandomDot
 {
 
-void draw(LedCube& cube, uint8_t freq = 5);
+    void draw(LedCube &cube, uint8_t freq = 5);
 
 }
 

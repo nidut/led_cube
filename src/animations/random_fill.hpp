@@ -6,7 +6,7 @@
 namespace RandomFill
 {
 
-void draw(LedCube& cube, int freq = 10, bool state=true);
+    void draw(LedCube &cube, int freq = 10, bool state = true);
 
 }
 #endif
