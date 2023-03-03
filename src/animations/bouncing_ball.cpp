@@ -6,20 +6,20 @@ static uint32_t  last_run = 0;
 static std::array<int8_t, 3> position = {0, 0, 0};
 static std::array<int8_t, 3> move_vector = {0, 0, 0};
 
-void BouncingBall::draw(LedCube& cube, int freq)
+void BouncingBall::draw(LedCube& cube, uint8_t freq)
 {
     if (millis() - last_run > 10000/freq || last_run == 0)
     {
         //first run
         position = { 
-            random(cube.getSizeX()), 
-            random(cube.getSizeY()), 
-            random(cube.getSizeZ())
+            (int8_t) random(cube.getSizeX()), 
+            (int8_t) random(cube.getSizeY()), 
+            (int8_t) random(cube.getSizeZ())
         };
         move_vector = {
-            random(1) ? 1 : -1,
-            random(1) ? 1 : -1,
-            random(1) ? 1 : -1
+            (int8_t) random(1) == 1 ? (int8_t) 1 : (int8_t) -1,
+            (int8_t) random(1) == 1 ? (int8_t) 1 : (int8_t) -1,
+            (int8_t) random(1) == 1 ? (int8_t) 1 : (int8_t) -1
         };
     }
     if (millis() - last_run > 1000/freq) {

@@ -10,6 +10,7 @@
 #include "animations/ripples.hpp"
 #include "animations/fill.hpp"
 #include "animations/plane_random_suspend.hpp"
+#include "animations/string_fly.hpp"
 
 /* Pins */
 const uint8_t LED_INTERNAL = 2;
@@ -33,7 +34,7 @@ const uint8_t PIN_BUTTON = 16;
 /* Constants */
 const int BUTTON_DEBOUNCE = 300; // [ms]
 const int POTI_UPDATE_RATE = 10; // [ms]
-const uint8_t NUM_OF_ANIMATIONS = 5;
+const uint8_t NUM_OF_ANIMATIONS = 6;
 const int REFRESH_RATE = 100; // [Hz] refresh rate for complete cube (all layers)
 const uint32_t PWM_FREQ = 125000;
 const int PWM_RES = 8;
@@ -149,7 +150,7 @@ void setup() {
     //Serial.begin(115200);
     act_z = 1;
     prev_z = 0;
-    active_animation = 0;
+    active_animation = 5;
     brightness_percent = 25;
     last_change_state = 0;
     animation_speed_factor = 1;
@@ -174,6 +175,9 @@ void loop() {
             break;
         case 4:
             Ripples::draw(cube, 500);
+            break;
+        case 5:
+            StringFly::draw(cube, "Nico", 10);
             break;
         default:
             BlinkingGrid::draw(cube);
