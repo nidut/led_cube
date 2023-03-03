@@ -159,7 +159,7 @@ void setup() {
 void loop() {
     switch (active_animation) {
         case 0:
-            PlaneRandSuspend::draw(cube, 10);
+            PlaneRandSuspend::draw(cube, 2, 15);
             break;
         case 1:
             Rain::draw(cube, 10);

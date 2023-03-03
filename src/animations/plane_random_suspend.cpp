@@ -9,17 +9,17 @@ uint8_t iterations = 0;
 static bool direction = true;
 
 
-void PlaneRandSuspend::draw(LedCube& cube, int freq)
+void PlaneRandSuspend::draw(LedCube& cube, uint8_t axis, int freq)
 {
     if (iterations == 0)
     {  
         last_run = millis();
         cube.setCube(false);
         if (direction) {
-            cube.setPlaneYZ(0);
+            cube.setPlane(axis, 0);
         }
         else {
-            cube.setPlaneYZ(7);            
+            cube.setPlane(axis, 7);            
         }
 
         for (int i = 0; i < 64; i++) {
@@ -60,8 +60,19 @@ void PlaneRandSuspend::draw(LedCube& cube, int freq)
         cube.setCube(false);
         for (int a = 0; a < 8; a++) {
             for (int b = 0; b < 8; b++) {
-                uint8_t x = positions[(a*8)+b];
-                cube.setVoxel(x, b, a);
+                uint8_t c = positions[(a*8)+b];
+                switch (axis)
+                {
+                    case 0:
+                        cube.setVoxel(c, b, a);
+                        break;
+                    case 1:
+                        cube.setVoxel(a, c, b);
+                        break;
+                    case 2:
+                        cube.setVoxel(a, b, c);
+                        break;
+                }
             }
         }
         iterations++;
