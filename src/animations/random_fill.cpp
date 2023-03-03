@@ -2,7 +2,7 @@
 
 using namespace RandomFill;
 
-static int last_run = 0;
+static uint32_t last_run = 0;
 
 void RandomFill::draw(LedCube& cube, int freq, bool state)
 {

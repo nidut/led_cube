@@ -2,7 +2,7 @@
 
 using namespace RandomDot;
 
-static int last_run = 0; 
+static uint32_t  last_run = 0; 
 
 void RandomDot::draw(LedCube& cube, uint8_t freq)
 {

@@ -2,7 +2,7 @@
 
 using namespace BlinkingGrid;
 
-static int last_run = 0; 
+static uint32_t  last_run = 0; 
 static bool toggle = true;
 
 void BlinkingGrid::draw(LedCube& cube, uint8_t freq)

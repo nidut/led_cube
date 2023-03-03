@@ -3,8 +3,8 @@
 
 using namespace Ripples;
 
-static int last_run = 0;
-static int iterations = 0;
+static uint32_t  last_run = 0;
+static uint32_t  iterations = 0;
 const static int MAX_ITERATION = 100;
 
 void Ripples::draw(LedCube& cube, int freq)

@@ -2,7 +2,7 @@
 
 using namespace BouncingBall;
 
-static int last_run = 0;
+static uint32_t  last_run = 0;
 static std::array<int8_t, 3> position = {0, 0, 0};
 static std::array<int8_t, 3> move_vector = {0, 0, 0};
 

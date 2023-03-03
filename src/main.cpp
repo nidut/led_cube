@@ -8,6 +8,7 @@
 #include "animations/bouncing_ball.hpp"
 #include "animations/random_fill.hpp"
 #include "animations/ripples.hpp"
+#include "animations/fill.hpp"
 
 /* Pins */
 const uint8_t LED_INTERNAL = 2;
@@ -29,11 +30,11 @@ const uint8_t PIN_POTI = 36;
 const uint8_t PIN_BUTTON = 16;
 
 /* Constants */
-const int BUTTON_DEBOUNCE = 500; // [ms]
+const int BUTTON_DEBOUNCE = 300; // [ms]
 const int POTI_UPDATE_RATE = 10; // [ms]
 const uint8_t NUM_OF_ANIMATIONS = 5;
 const int REFRESH_RATE = 100; // [Hz] refresh rate for complete cube (all layers)
-const int PWM_FREQ = 125000;
+const uint32_t PWM_FREQ = 125000;
 const int PWM_RES = 8;
 const int PWM_OFF = pow(2,PWM_RES)-1;
 
@@ -54,7 +55,7 @@ LedCube cube;
 uint8_t act_z;
 uint8_t prev_z;
 volatile uint8_t active_animation;
-uint8_t last_change_state;
+uint32_t last_change_state;
 float animation_speed_factor;
 
 void IRAM_ATTR ISR_refreshCube(){
@@ -93,17 +94,17 @@ void IRAM_ATTR ISR_getPotiValue() {
     }
     else {
         // button pressed
-        brightness_percent = map(analog_value, 0, 4095, 0, 100);
+        //brightness_percent = map(analog_value, 0, 4095, 5, 100);
     }
 }
 
 void IRAM_ATTR ISR_changeState() {
     if (millis() - last_change_state > BUTTON_DEBOUNCE) {
+      last_change_state = millis();
       active_animation++;
-      if (active_animation >= NUM_OF_ANIMATIONS) {
+      if (active_animation == NUM_OF_ANIMATIONS) {
           active_animation = 0;    
       }
-      last_change_state = millis();
     }
 }
 
@@ -157,10 +158,10 @@ void setup() {
 void loop() {
     switch (active_animation) {
         case 0:
-            BouncingBall::draw(cube, 5);
+            Fill::draw(cube, 10);
             break;
         case 1:
-            Rain::draw(cube);
+            Rain::draw(cube, 10);
             //blinkingGrid(cube);
             break;
         case 2:

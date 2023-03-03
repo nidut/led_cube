@@ -2,7 +2,7 @@
 
 using namespace Rain;
 
-static int last_run = 0;
+static uint32_t  last_run = 0;
 
 void Rain::draw(LedCube& cube, int freq)
 {
