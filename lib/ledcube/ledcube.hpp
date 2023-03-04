@@ -32,6 +32,7 @@ public:
     void setPlaneXZ(uint8_t y, bool led_state = true);
     void setCube(bool led_state = true);
     void shift(uint8_t axis, int8_t distance);
+    void rotate(int8_t axis_position_x = 4, int8_t axis_position_y = 3, bool rotation_direction = true);
     uint8_t getSize(uint8_t axis);
     uint8_t getSizeX();
     uint8_t getSizeY();

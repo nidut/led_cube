@@ -172,7 +172,7 @@ void loop()
     switch (active_animation)
     {
         case 0:
-            PlaneRandSuspend::draw(cube, 2, 15);
+            PlaneRandSuspend::draw(cube, 0, 15);
             break;
         case 1:
             Rain::draw(cube, 10);
@@ -187,7 +187,7 @@ void loop()
             Ripples::draw(cube, 500);
             break;
         case 5:
-            StringFly::draw(cube, "Nico", 10);
+            StringFly::draw(cube, "3210 HelloWorld", 5);
             break;
         case 6:
             BouncingBall::draw(cube);
