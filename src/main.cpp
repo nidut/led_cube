@@ -169,27 +169,43 @@ void setup()
 
 void loop()
 {
+    if (millis()/1000 % 15 == 0)
+    {
+        cube.setCubeBase(cube.FRONT);
+    }
+    else if (millis()/1000 % 15 == 5)
+    {
+        cube.setCubeBase(cube.LEFT);
+    }
+    else if (millis()/1000 % 15 == 10)
+    {
+        cube.setCubeBase(cube.BOTTOM);
+    }
     switch (active_animation)
     {
         case 0:
             PlaneRandSuspend::draw(cube, 0, 15);
             break;
         case 1:
+            cube.setCubeBase(cube.BOTTOM);
             Rain::draw(cube, 10);
             break;
         case 2:
             Planboing::draw(cube, 2, 10);
             break;
         case 3:
+            cube.setCubeBase(cube.BOTTOM);
             RandomFill::draw(cube, 20);
             break;
         case 4:
             Ripples::draw(cube, 500);
             break;
         case 5:
+            cube.setCubeBase(cube.BOTTOM);
             StringFly::draw(cube, "3210 HelloWorld", 10);
             break;
         case 6:
+            cube.setCubeBase(cube.BOTTOM);
             BouncingBall::draw(cube);
             break;
         default:
