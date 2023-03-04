@@ -4,19 +4,65 @@ void LedCube::setVoxel(uint8_t x, uint8_t y, uint8_t z, bool led_state)
 {
     if (isVoxelInCube(x, y, z))
     {
-        this->cube[x][y][z] = led_state;
+        // data storage always with cube_base = BOTTOM
+        cube[x][y][z] = led_state;
     }
 }
-bool LedCube::getVoxel(uint8_t x, uint8_t y, uint8_t z)
+bool LedCube::getVoxel(uint8_t x, uint8_t y, uint8_t z, bool raw)
 {
+    bool value = false;
     if (isVoxelInCube(x, y, z))
     {
-        return cube[x][y][z];
+        if (!raw) 
+        {
+            // read data with regards to cube_base
+            transformVoxel(x, y, z, cube_base);
+        }
+        value = cube[x][y][z];
     }
-    else
+    return value;
+}
+void LedCube::transformVoxel(uint8_t & x, uint8_t & y, uint8_t & z, uint8_t cube_base)
+{  
+    uint8_t new_x;
+    uint8_t new_y; 
+    uint8_t new_z;
+    switch (cube_base)
     {
-        return false;
+        case BOTTOM:
+            new_x = x;
+            new_y = y;
+            new_z = z;
+            break;
+        case TOP:
+            new_x = getSizeX()-1-x;
+            new_y = getSizeY()-1-y;
+            new_z = getSizeZ()-1-z;
+            break;
+        case RIGHT:
+            new_x = z;
+            new_y = y;
+            new_z = getSizeX()-1-x;
+            break;
+        case LEFT:
+            new_x = getSizeZ()-1-z;
+            new_y = y;
+            new_z = x;
+            break;
+        case FRONT:
+            new_x = x;
+            new_y = getSizeZ()-1-z;
+            new_z = y;
+            break;
+        case REAR:
+            new_x = getSizeX()-1-x;
+            new_y = z;
+            new_z = getSizeY()-1-y;
+            break;
     }
+    x = new_x;
+    y = new_y;
+    z = new_z;
 }
 void LedCube::setRow(uint8_t y, uint8_t z, bool led_state)
 {
@@ -117,7 +163,7 @@ void LedCube::shift(uint8_t axis, int8_t distance)
                 {
                     continue;
                 }
-                new_cube[x + distance_x][y + distance_y][z + distance_z] = getVoxel(x, y, z);
+                new_cube[x + distance_x][y + distance_y][z + distance_z] = getVoxel(x, y, z, true);
             }
         }
     }
@@ -125,18 +171,7 @@ void LedCube::shift(uint8_t axis, int8_t distance)
 }
 void LedCube::rotate(int8_t axis_position_x, int8_t axis_position_y, bool rotation_direction)
 {
-    //LedCube new_cube;
-    std::array<std::array<std::array<bool, SIZE_X>, SIZE_Y>, SIZE_Z> new_cube;
-    for (int8_t x = 0; x < getSizeX(); x++)
-    {
-        for (int8_t y = 0; y < getSizeY(); y++)
-        {
-            for (int8_t z = 0; z < getSizeZ(); z++)
-            {
-                new_cube[x][y][z] = false;
-            }
-        }
-    }
+    LedCube new_cube(cube_base);
     for (int8_t x = 0; x < getSizeX(); x++)
     {
         for (int8_t y = 0; y < getSizeY(); y++)
@@ -149,68 +184,44 @@ void LedCube::rotate(int8_t axis_position_x, int8_t axis_position_y, bool rotati
                 {
                     new_x = x;
                     new_y = y;
-                    new_cube[new_x][new_y][z] = getVoxel(x, y, z);
                 }
                 // y plane of rotation axis, move left or right
                 else if (x == axis_position_x)
                 {
-                    int8_t offset_x = y-axis_position_y;
-                    //int8_t offset_x = rotation_direction ? (y - axis_position_y) : -1 * (y - axis_position_y);
-                    // if (x - offset_x >= getSizeX() || x - offset_x < 0)
-                    // {
-                    //     continue;
-                    // }
+                    int8_t offset_x = rotation_direction ? (y - axis_position_y) : -1 * (y - axis_position_y);
                     new_x = x - offset_x;
                     new_y = y;
-                    new_cube[new_x][new_y][z] = getVoxel(x, y, z);
                 }
                 // x plane of rotation axis, move to back or to front
                 else if (y == axis_position_y)
                 {
-                    //int8_t offset_y = 0;
-                    //if(rotation_direction)
-                    //{
-                    //    offset_y = x - axis_position_x;
-                    //}
-                    // else
-                    // {
-                    //     offset_y =  -1 * (x - axis_position_x);
-                    // }
+                    int8_t offset_y = rotation_direction ? (x - axis_position_x) : -1 * (x - axis_position_x);
                     new_x = x;
-                    // if (x - axis_position_x >= getSizeX() || x - axis_position_x < 0)
-                    // {
-                    //     continue;
-                    // }
-                    new_y = y + (x - axis_position_x);
-                    new_cube[new_x][new_y][z] = getVoxel(x, y, z);
+                    new_y = y + offset_y;
                 }
                 // diagonals
                 else if (abs(x - axis_position_x) == abs(y - axis_position_y))
                 {
                     if ((x < axis_position_x && y < axis_position_y) || (x > axis_position_x && y > axis_position_y))
                     {
-                        new_x = axis_position_x;
-                        new_y = y;
-                        new_cube[new_x][new_y][z] = getVoxel(x, y, z);
-                        //new_x = rotation_direction ? axis_position_x : x;
-                        //new_y = rotation_direction ? y : axis_position_y;
+                        new_x = rotation_direction ? axis_position_x : x;
+                        new_y = rotation_direction ? y : axis_position_y;
                     }
                     else if ((x < axis_position_x && y > axis_position_y) || (x > axis_position_x && y < axis_position_y))
                     {
-                        new_x = x;
-                        new_y = axis_position_y;
-                        new_cube[new_x][new_y][z] = getVoxel(x, y, z);
-                        // new_x = rotation_direction ? x : axis_position_x;
-                        // new_y = rotation_direction ? axis_position_y : y;
+                        new_x = rotation_direction ? x : axis_position_x;
+                        new_y = rotation_direction ? axis_position_y : y;
                     }
                 }
-                
-                //new_cube.setVoxel(new_x, new_y, z, this->getVoxel(x, y, z));
+                // ignore all other pixels!
+                else{
+                    continue;
+                }
+                new_cube.setVoxel(new_x, new_y, z, this->getVoxel(x, y, z, true));
             }
         }
     }
-    cube = new_cube;
-    //this->cube = new_cube.cube;
+    cube = new_cube.cube;
 }
 uint8_t LedCube::getSizeX()
 {
@@ -246,9 +257,21 @@ bool LedCube::isVoxelInCube(uint8_t x, uint8_t y, uint8_t z)
 {
     return (x < getSizeX() && x >= 0 && y < getSizeY() && y >= 0 && z < getSizeZ() && z >= 0);
 }
-LedCube::LedCube()
+void LedCube::setCubeBase(uint8_t base)
+{
+    if (base >= 0 && base <= 5)
+    {
+        cube_base = base;
+    }
+}
+uint8_t LedCube::getCubeBase()
+{
+    return cube_base;
+}
+LedCube::LedCube(uint8_t base)
 {
     setCube(false);
+    cube_base = base;
 }
 LedCube::~LedCube()
 {
