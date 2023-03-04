@@ -13,6 +13,8 @@ void StringFly::draw(LedCube &cube, string text, uint8_t freq)
     if (millis() - last_run > 10000 / freq)
     {
         cube.setCube(false);
+        text_position = 0;
+        iteration = 0;    
     }
     if (millis() - last_run > 1000 / freq)
     {
@@ -26,7 +28,6 @@ void StringFly::draw(LedCube &cube, string text, uint8_t freq)
 
         // shift cube from back to front 1 step
         cube.shift(1, -1);
-        // cube.rotate(4, 3, false);
 
         // draw next letter
         if (iteration == 0)
@@ -48,7 +49,7 @@ void StringFly::draw(LedCube &cube, string text, uint8_t freq)
         iteration++;
 
         // letter reached front, switch to next letter
-        if (iteration == 28)
+        if (iteration == 8)
         {
             text_position++;
             iteration = 0;

@@ -187,8 +187,7 @@ void loop()
             Ripples::draw(cube, 500);
             break;
         case 5:
-            cube.setCubeBase(cube.REAR);
-            StringFly::draw(cube, "3210 HelloWorld", 15);
+            StringFly::draw(cube, "3210 HelloWorld", 10);
             break;
         case 6:
             BouncingBall::draw(cube);
